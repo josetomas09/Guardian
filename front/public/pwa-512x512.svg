@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Guardian PWA icon">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#g)"/>
+  <path d="M256 92l122 46v90c0 92-54 154-122 192-68-38-122-100-122-192v-90l122-46z" fill="#f8fafc"/>
+  <path d="M256 154v190" stroke="#1e293b" stroke-width="32" stroke-linecap="round"/>
+  <path d="M197 238h118" stroke="#1e293b" stroke-width="32" stroke-linecap="round"/>
+</svg>
+

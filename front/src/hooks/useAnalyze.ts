@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { analyzeText, type AnalyzeRequest, type AnalyzeResponse } from '../services/analyze.service'
+import { analyzeText, type AnalyzeRequest, type AnalyzeResponse } from '../services'
 
 type AnalyzeState = {
   loading: boolean

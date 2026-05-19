@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Guardian touch icon">
+  <rect width="180" height="180" rx="38" fill="#0f172a"/>
+  <path d="M90 34l44 17v32c0 32-19 54-44 67-25-13-44-35-44-67V51l44-17z" fill="#f8fafc"/>
+  <path d="M90 56v66" stroke="#1e293b" stroke-width="10" stroke-linecap="round"/>
+  <path d="M69 86h42" stroke="#1e293b" stroke-width="10" stroke-linecap="round"/>
+</svg>
+
