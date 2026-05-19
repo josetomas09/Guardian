@@ -1,0 +1,43 @@
+.base-screen {
+  min-height: 100svh;
+  padding: 1.25rem;
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.base-screen__title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.base-screen__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #334155;
+}
+
+.base-screen__caption {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+@media (min-width: 48rem) {
+  .base-screen {
+    padding: 2.5rem;
+  }
+
+  .base-screen__title {
+    font-size: 2.5rem;
+  }
+
+  .base-screen__subtitle {
+    font-size: 1.125rem;
+  }
+}
+
