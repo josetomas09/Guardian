@@ -26,8 +26,8 @@ coverage.xml
 htmlcov/
 
 # Environment variables
-.env
-.env.*
+Python/app/.env
+Python/app/.env.*
 
 # === Node / Frontend ===
 node_modules/
