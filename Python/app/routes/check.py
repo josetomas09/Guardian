@@ -11,13 +11,20 @@ async def check_url(request: URLRequest):
     gsb_result = await google_sf_browsing.check(url)
     vt_result = await virustotal.check(url)
 
-    # TODO: ajustar keys cuando implementemos los servicios reales
-    is_safe = gsb_result["is_safe"] and vt_result["is_safe"]
+    # Después de obtener los resultados, manejá el caso donde un servicio falló
+    gsb_safe = gsb_result.get("is_safe")
+    vt_safe = vt_result.get("is_safe")
+
+    # Si alguno falló (None), lo tratamos como "no sabemos" → precaución
+    if gsb_safe is None or vt_safe is None:
+        is_safe = False
+    else:
+        is_safe = gsb_safe and vt_safe
 
     return URLCheckResponse(
         url=url,
         is_safe=is_safe,
         risk_level= "safe" if is_safe else "malicious", #TODO: add more risk levels
-        details={"google_safe_browsing": gsb_result, "virustotal": vt_result} #TODO: add more details
-
+        details={"google_safe_browsing": gsb_result, "virustotal": vt_result}, #TODO: add more details
+        score=0
     )
