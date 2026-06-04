@@ -5,6 +5,7 @@ class URLRequest(BaseModel):
 
 class URLCheckResponse(BaseModel):
     url: str
+    score: int
     is_safe: bool
     risk_level: str
-    details: str
+    details: dict
