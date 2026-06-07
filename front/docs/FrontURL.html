@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Authenticator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #13161e;
+      --border: #222631;
+      --accent: #00e5a0;
+      --accent-dim: rgba(0, 229, 160, 0.10);
+      --text: #e8eaf0;
+      --muted: #6b7385;
+      --danger: #ff4d6d;
+      --danger-dim: rgba(255, 77, 109, 0.10);
+      --warn: #ffb700;
+      --warn-dim: rgba(255, 183, 0, 0.10);
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    /* --- HEADER --- */
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(0, 229, 160, 0.3);
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-bottom: 1.2rem;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+
+    h1 span { color: var(--accent); }
+
+    p.subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 400;
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* --- CARD --- */
+    .card {
+      width: 100%;
+      max-width: 640px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: var(--accent);
+    }
+
+    .input-icon {
+      padding: 0 14px;
+      color: var(--muted);
+      font-size: 18px;
+      user-select: none;
+    }
+
+    input[type="url"] {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.88rem;
+      padding: 14px 14px 14px 0;
+    }
+
+    input[type="url"]::placeholder { color: var(--muted); }
+
+    button.check-btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--accent);
+      color: #0d0f14;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    button.check-btn:hover { opacity: 0.88; }
+    button.check-btn:active { transform: scale(0.98); }
+    button.check-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* --- RESULT --- */
+    #result {
+      margin-top: 1.5rem;
+      display: none;
+    }
+
+    .result-box {
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border: 1px solid;
+    }
+
+    .result-box.success {
+      background: var(--accent-dim);
+      border-color: rgba(0, 229, 160, 0.25);
+    }
+
+    .result-box.danger {
+      background: var(--danger-dim);
+      border-color: rgba(255, 77, 109, 0.25);
+    }
+
+    .result-box.warning {
+      background: var(--warn-dim);
+      border-color: rgba(255, 183, 0, 0.25);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .result-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .result-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .result-box.success .result-title { color: var(--accent); }
+    .result-box.danger .result-title { color: var(--danger); }
+    .result-box.warning .result-title { color: var(--warn); }
+
+    .result-subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .result-detail {
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    .detail-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .original-url {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      word-break: break-all;
+      line-height: 1.5;
+      background: rgba(0, 229, 160, 0.05);
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+
+    .original-url.danger-url {
+      color: var(--danger);
+      background: rgba(255, 77, 109, 0.05);
+    }
+
+    .copy-btn {
+      margin-top: 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* --- HISTORY --- */
+    .history-section {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .history-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    #history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      word-break: break-all;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .history-item:hover { border-color: var(--accent); color: var(--text); }
+
+    .hist-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .hist-dot.ok { background: var(--accent); }
+    .hist-dot.fail { background: var(--danger); }
+
+    /* spinner */
+    .spinner {
+      display: none;
+      width: 20px; height: 20px;
+      border: 2px solid rgba(13,15,20,0.3);
+      border-top-color: #0d0f14;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">Sistema de Autenticación</div>
+    <h1>URL <span>Authenticator</span></h1>
+    <p class="subtitle">Verificá si una URL es auténtica o si redirige a un sitio diferente al esperado.</p>
+  </header>
+
+  <div class="card">
+    <div class="input-group">
+      <label for="url-input">URL a verificar</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔗</span>
+        <input
+          type="url"
+          id="url-input"
+          placeholder="https://ejemplo.com/pagina"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+    </div>
+
+    <button class="check-btn" id="check-btn" onclick="checkURL()">
+      <span id="btn-label">Verificar URL</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+
+    <div id="result"></div>
+  </div>
+
+  <div class="history-section">
+    <p class="history-title">Historial de verificaciones</p>
+    <div id="history-list"></div>
+  </div>
+
+<script>
+  /* ============================================================
+     LÓGICA DE AUTENTICACIÓN
+     ============================================================
+     Acá es donde conectás tu backend real.
+     Por ahora simula el comportamiento con datos de prueba.
+     ============================================================ */
+
+  const FAKE_DB = {
+    "https://google.com":         { authentic: true,  original: "https://www.google.com" },
+    "https://www.google.com":     { authentic: true,  original: "https://www.google.com" },
+    "https://gooogle.com":        { authentic: false, original: "https://www.google.com" },
+    "https://paypa1.com":         { authentic: false, original: "https://www.paypal.com" },
+    "https://www.paypal.com":     { authentic: true,  original: "https://www.paypal.com" },
+    "https://facebook.com":       { authentic: true,  original: "https://www.facebook.com" },
+    "https://faceb00k.com":       { authentic: false, original: "https://www.facebook.com" },
+    "https://secure-bank-login.xyz": { authentic: false, original: "https://www.santander.com.ar" },
+  };
+
+  let history = [];
+
+  async function checkURL() {
+    const input = document.getElementById('url-input').value.trim();
+    const resultDiv = document.getElementById('result');
+    const btn = document.getElementById('check-btn');
+    const label = document.getElementById('btn-label');
+    const spinner = document.getElementById('spinner');
+
+    if (!input) {
+      showError("Por favor ingresá una URL.");
+      return;
+    }
+
+    if (!isValidURL(input)) {
+      showError("La URL no es válida. Asegurate de incluir https://");
+      return;
+    }
+
+    // Mostrar loading
+    btn.disabled = true;
+    label.style.display = 'none';
+    spinner.style.display = 'block';
+    resultDiv.style.display = 'none';
+
+    // Simular llamada al backend
+    await sleep(900);
+
+    // ==============================================================
+    // REEMPLAZÁ ESTO POR TU LLAMADA REAL AL BACKEND:
+    //
+    // const response = await fetch('http://localhost:5000/check', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ url: input })
+    // });
+    // const data = await response.json();
+    // Esperamos que data tenga: { authentic: bool, original: string }
+    //
+    // Por ahora usamos la base de datos falsa:
+    const data = FAKE_DB[input] ?? { authentic: null, original: null };
+    // ==============================================================
+
+    btn.disabled = false;
+    label.style.display = 'inline';
+    spinner.style.display = 'none';
+
+    renderResult(input, data);
+    addToHistory(input, data);
+  }
+
+  function renderResult(url, data) {
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'block';
+
+    if (data.authentic === null) {
+      resultDiv.innerHTML = `
+        <div class="result-box warning">
+          <div class="result-header">
+            <span class="result-icon">⚠️</span>
+            <div>
+              <div class="result-title">URL no encontrada en la base</div>
+              <div class="result-subtitle">${escHtml(url)}</div>
+            </div>
+          </div>
+          <div class="result-detail">
+            <div class="detail-label">Estado</div>
+            <div style="font-size:0.85rem; color:var(--warn);">
+              Esta URL no está registrada en el sistema. Proceder con precaución.
+            </div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    if (data.authentic) {
+      resultDiv.innerHTML = `
+        <div class="result-box success">
+          <div class="result-header">
+            <span class="result-icon">✅</span>
+            <div>
+              <div class="result-title">URL Auténtica</div>
+              <div class="result-subtitle">${escHtml(url)}</div>
+            </div>
+          </div>
+          <div class="result-detail">
+            <div class="detail-label">URL original verificada</div>
+            <div class="original-url">${escHtml(data.original)}</div>
+          </div>
+        </div>`;
+    } else {
+      resultDiv.innerHTML = `
+        <div class="result-box danger">
+          <div class="result-header">
+            <span class="result-icon">🚨</span>
+            <div>
+              <div class="result-title">URL No Auténtica</div>
+              <div class="result-subtitle">${escHtml(url)}</div>
+            </div>
+          </div>
+          <div class="result-detail">
+            <div class="detail-label">URL original correcta</div>
+            <div class="original-url danger-url">${escHtml(data.original)}</div>
+            <button class="copy-btn" onclick="copyToClipboard('${escHtml(data.original)}')">📋 Copiar URL original</button>
+          </div>
+        </div>`;
+    }
+  }
+
+  function showError(msg) {
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+      <div class="result-box danger">
+        <div class="result-header">
+          <span class="result-icon">❌</span>
+          <div>
+            <div class="result-title">Error de entrada</div>
+            <div class="result-subtitle">${escHtml(msg)}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function addToHistory(url, data) {
+    history.unshift({ url, ok: data.authentic });
+    if (history.length > 6) history.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('history-list');
+    if (history.length === 0) { list.innerHTML = ''; return; }
+    list.innerHTML = history.map(h => `
+      <div class="history-item" onclick="loadFromHistory('${escHtml(h.url)}')">
+        <span class="hist-dot ${h.ok === true ? 'ok' : 'fail'}"></span>
+        ${escHtml(h.url)}
+      </div>
+    `).join('');
+  }
+
+  function loadFromHistory(url) {
+    document.getElementById('url-input').value = url;
+    checkURL();
+  }
+
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('URL copiada al portapapeles');
+    });
+  }
+
+  function isValidURL(str) {
+    try { new URL(str); return true; } catch { return false; }
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  // Enter para verificar
+  document.getElementById('url-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkURL();
+  });
+</script>
+</body>
+</html>
