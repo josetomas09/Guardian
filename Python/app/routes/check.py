@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.schemas.url_check import URLRequest, URLCheckResponse
-from app.services import google_sf_browsing, virustotal
+from app.services import google_sf_browsing, virustotal, url_expander
 
 router = APIRouter()
 
@@ -54,19 +54,35 @@ def _calculate_score_and_risk(gsb: dict, vt: dict) -> tuple[int, str, str]:
 async def check_url(request: URLRequest):
     url = str(request.url)
 
-    gsb_result = await google_sf_browsing.check(url)
-    vt_result = await virustotal.check(url)
+    # Expandir si es un link acortado
+    expanded_url = url
+    was_expanded = False
+
+    print(f"URL recibida: {url}")
+    print(f"Is shortened: {url_expander.is_shortened(url)}")
+
+    if url_expander.is_shortened(url):
+        expanded_url = await url_expander.expand(url)
+        was_expanded = expanded_url != url
+
+    print(f"URL expandida: {expanded_url}")
+    print(f"Was expanded: {was_expanded}")
+
+    gsb_result = await google_sf_browsing.check(expanded_url)
+    vt_result = await virustotal.check(expanded_url)
 
     score, risk_level, threat_type = _calculate_score_and_risk(gsb_result, vt_result)
-    is_safe = score >= 67  # Verde = seguro
+    is_safe = score >= 67
 
     return URLCheckResponse(
-        url=url,
+        url=expanded_url,          # devolvemos la URL real
         score=score,
         is_safe=is_safe,
         risk_level=risk_level,
         threat_type=threat_type,
         details={
+            "original_url": url if was_expanded else None,
+            "was_expanded": was_expanded,
             "google_safe_browsing": gsb_result,
             "virustotal": vt_result
         }
