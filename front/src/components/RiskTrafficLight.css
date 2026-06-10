@@ -1,0 +1,8 @@
+.risk-card{display:flex;align-items:center;gap:1rem;padding:1.125rem;border-radius:18px;border:2px solid transparent;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
+.risk-card__icon{display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.risk-card__title{margin:0;font-size:1.25rem;line-height:1.2}
+.risk-card__message{margin:0.35rem 0 0;color:rgba(232,234,240,0.92);font-size:1rem;line-height:1.5}
+.risk-card--green{background:linear-gradient(180deg,rgba(0,229,160,0.12),rgba(19,22,30,0.96));border-color:var(--success);color:var(--text)}
+.risk-card--yellow{background:linear-gradient(180deg,rgba(255,183,0,0.12),rgba(19,22,30,0.96));border-color:var(--warning);color:var(--text)}
+.risk-card--red{background:linear-gradient(180deg,rgba(255,77,109,0.12),rgba(19,22,30,0.96));border-color:var(--danger);color:var(--text)}
+
