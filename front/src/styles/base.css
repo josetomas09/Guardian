@@ -1,41 +1,30 @@
-/* Mobile-first reset and design tokens */
-:root {
-  color-scheme: light;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.4;
-  font-weight: 400;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+:root{
+  --success:#00e5a0;
+  --warning:#ffb700;
+  --danger:#ff4d6d;
+  --bg:#0d0f14;
+  --surface:#13161e;
+  --text:#e8eaf0;
+  color-scheme:dark;
+  font-family:'Syne','Inter',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  font-size:18px;
+  line-height:1.5;
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
-* {
-  box-sizing: border-box;
-}
+*{box-sizing:border-box}
 
-html,
-body,
-#root {
-  width: 100%;
-  min-height: 100%;
-  margin: 0;
-}
+html,body,#root{width:100%;min-height:100%;margin:0}
 
-body {
-  min-height: 100svh;
-  background-color: #f8fafc;
-  color: #0f172a;
-}
+body{min-height:100svh;background-color:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
-img,
-svg {
-  display: block;
-  max-width: 100%;
-}
+img,svg{display:block;max-width:100%}
 
-@media (min-width: 48rem) {
-  :root {
-    line-height: 1.5;
-  }
-}
+@media (min-width:48rem){:root{line-height:1.6}}
 
+button{min-height:54px;padding:0.75rem 1rem;border-radius:8px;border:none;cursor:pointer;font-size:1rem}
+
+.container{padding:1rem}

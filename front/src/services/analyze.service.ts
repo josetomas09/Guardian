@@ -1,14 +1,14 @@
 import type { AnalyzeRequest, AnalyzeResponse } from '../types/analyze'
 
-const ANALYZE_ENDPOINT = '/analyze'
+const ANALYZE_ENDPOINT = '/api/v1/analyze'
 
 export async function analyzeText(payload: AnalyzeRequest): Promise<AnalyzeResponse> {
   const response = await fetch(ANALYZE_ENDPOINT, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   })
 
   if (!response.ok) {

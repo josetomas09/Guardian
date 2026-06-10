@@ -1,29 +1,29 @@
 import { useCallback, useState } from 'react'
-import { analyzeText, type AnalyzeRequest, type AnalyzeResponse } from '../services'
+import { analyzeText } from '../services'
+import type { AnalyzeRequest, AnalyzeResponse } from '../types/analyze'
 
 type AnalyzeState = {
   loading: boolean
   data: AnalyzeResponse | null
-  error: string | null
+  error: boolean
 }
 
 export function useAnalyze() {
   const [state, setState] = useState<AnalyzeState>({
     loading: false,
     data: null,
-    error: null,
+    error: false,
   })
 
   const runAnalyze = useCallback(async (payload: AnalyzeRequest) => {
-    setState({ loading: true, data: null, error: null })
+    setState({ loading: true, data: null, error: false })
 
     try {
       const data = await analyzeText(payload)
-      setState({ loading: false, data, error: null })
+      setState({ loading: false, data, error: false })
       return data
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Analyze request failed'
-      setState({ loading: false, data: null, error: message })
+    } catch {
+      setState({ loading: false, data: null, error: true })
       return null
     }
   }, [])

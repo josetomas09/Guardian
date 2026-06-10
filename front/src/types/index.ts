@@ -1,2 +1,2 @@
-export type { AnalyzeRequest, AnalyzeResponse, RiskItem } from './analyze'
+export type { AnalyzeRequest, AnalyzeResponse } from './analyze'
 

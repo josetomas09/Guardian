@@ -1,17 +1,13 @@
 export type AnalyzeRequest = {
-  text: string
-  language?: 'es' | 'en'
-}
-
-export type RiskItem = {
-  label: string
-  score: number
+  url: string
 }
 
 export type AnalyzeResponse = {
-  verdict: 'safe' | 'warning' | 'danger'
+  url: string
   score: number
-  risks: RiskItem[]
-  summary: string
+  is_safe: boolean
+  risk_level: string
+  threat_type: string | null
+  details: any
 }
 
