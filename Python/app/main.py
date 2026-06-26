@@ -14,7 +14,7 @@ app = FastAPI(title="Guardian API", version="0.1.0")
 # 1. Middlewares
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL", "http://localhost:3000")], # TODO: Cambiarlo por la real!
+    allow_origins=[os.getenv("FRONTEND_URL", "http://localhost:5173")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
