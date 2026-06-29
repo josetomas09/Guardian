@@ -11,7 +11,6 @@ def _detect_threat_type(categories: dict, results: dict, url: str = "") -> str:
         [r.get("result", "") for r in results.values() if r.get("result")]
     ).lower()
 
-    # Primero chequeamos la URL como contexto fuerte
     url_lower = url.lower()
     if "unwanted" in url_lower:
         return "unwanted_software"
